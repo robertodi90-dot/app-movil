@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "nombre": "Papel Couche 150g",
+    "categoria": "Papel",
+    "stock": 120,
+    "ubicacion": "Estante A1"
+  },
+  {
+    "id": "2",
+    "nombre": "Tinta Negra",
+    "categoria": "Tintas",
+    "stock": 18,
+    "ubicacion": "Estante B2"
+  },
+  {
+    "id": "3",
+    "nombre": "Barniz UV",
+    "categoria": "Acabados",
+    "stock": 9,
+    "ubicacion": "Estante C1"
+  }
+]
