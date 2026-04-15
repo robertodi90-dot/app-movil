@@ -12,8 +12,17 @@ import {
 import { cargarRegistrosIniciales } from "./src/services/registros";
 import type { Registro } from "./src/types/registro";
 import { filtrarRegistros, type FiltrosBusqueda } from "./src/utils/search";
+import eventosData from "./src/data/eventos.json";
 
 const registros = cargarRegistrosIniciales();
+type Evento = {
+  codigo: string;
+  descripcion: string;
+  stockAntes: number;
+  stockDespues: number;
+};
+
+const eventos = eventosData as Evento[];
 
 const obtenerOpcionesUnicas = (
   lista: Registro[],
@@ -49,6 +58,13 @@ export default function App() {
     () => filtrarRegistros(registros, busqueda, filtros),
     [busqueda, filtros]
   );
+  const ultimosMovimientos = useMemo(() => {
+    // Quitamos OT y mostramos solo 5 movimientos, del más reciente al más antiguo.
+    return eventos
+      .filter((evento) => evento.codigo.trim().toUpperCase() !== "OT")
+      .slice(-5)
+      .reverse();
+  }, []);
 
   const hayDatos = registros.length > 0;
   const sinResultados = hayDatos && resultado.length === 0;
@@ -171,6 +187,25 @@ export default function App() {
         <Text style={styles.counter}>
           Mostrando {resultado.length} de {registros.length}
         </Text>
+      </View>
+      <View style={styles.eventosSection}>
+        <Text style={styles.eventosTitle}>Últimos movimientos</Text>
+
+        {ultimosMovimientos.length === 0 ? (
+          <Text style={styles.eventosEmpty}>No hay movimientos recientes</Text>
+        ) : (
+          ultimosMovimientos.map((evento, index) => (
+            <View
+              key={`${evento.codigo}-${index}`}
+              style={styles.eventoCard}
+            >
+              <Text style={styles.meta}>Código: {evento.codigo}</Text>
+              <Text style={styles.meta}>Descripción: {evento.descripcion}</Text>
+              <Text style={styles.meta}>Stock antes: {evento.stockAntes}</Text>
+              <Text style={styles.meta}>Stock después: {evento.stockDespues}</Text>
+            </View>
+          ))
+        )}
       </View>
 
       {sinResultados ? (
@@ -342,6 +377,24 @@ const styles = StyleSheet.create({
   },
   counter: {
     color: "#607080"
+  },
+  eventosSection: {
+    paddingHorizontal: 16,
+    gap: 8
+  },
+  eventosTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#24303C"
+  },
+  eventosEmpty: {
+    color: "#607080"
+  },
+  eventoCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    padding: 12,
+    gap: 4
   },
   list: {
     padding: 16,
