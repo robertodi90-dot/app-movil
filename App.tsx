@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
-  ScrollView,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -24,16 +23,17 @@ const obtenerOpcionesUnicas = (
 export default function App() {
   const [busqueda, setBusqueda] = useState("");
   const [filtros, setFiltros] = useState<FiltrosBusqueda>({
-    tipo: "",
+    medida: "",
     textura: "",
     gramaje: ""
   });
+  const [filtroAbierto, setFiltroAbierto] = useState<"" | "medida" | "textura" | "gramaje">("");
   const [registroSeleccionado, setRegistroSeleccionado] = useState<Registro | null>(
     null
   );
 
-  const opcionesTipo = useMemo(
-    () => obtenerOpcionesUnicas(registros, (item) => item.tipo),
+  const opcionesMedida = useMemo(
+    () => obtenerOpcionesUnicas(registros, (item) => item.medida),
     []
   );
   const opcionesTextura = useMemo(
@@ -116,72 +116,57 @@ export default function App() {
           style={styles.searchInput}
         />
         <View style={styles.filtersBlock}>
-          <Text style={styles.filterLabel}>Tipo</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.filterRow}>
-              <FiltroOpcion
-                label="Todos"
-                activo={!filtros.tipo}
-                onPress={() => setFiltros((prev) => ({ ...prev, tipo: "" }))}
-              />
-              {opcionesTipo.map((opcion) => (
-                <FiltroOpcion
-                  key={`tipo-${opcion}`}
-                  label={opcion}
-                  activo={filtros.tipo === opcion}
-                  onPress={() =>
-                    setFiltros((prev) => ({ ...prev, tipo: opcion }))
-                  }
-                />
-              ))}
-            </View>
-          </ScrollView>
+          <Text style={styles.filterLabel}>Medida</Text>
+          <FiltroDesplegable
+            label={!filtros.medida ? "Todas" : filtros.medida}
+            abierto={filtroAbierto === "medida"}
+            opciones={opcionesMedida}
+            opcionActiva={filtros.medida}
+            textoTodas="Todas"
+            onToggle={() =>
+              setFiltroAbierto((prev) => (prev === "medida" ? "" : "medida"))
+            }
+            onSeleccionar={(valor) => {
+              setFiltros((prev) => ({ ...prev, medida: valor }));
+              setFiltroAbierto("");
+            }}
+          />
         </View>
 
         <View style={styles.filtersBlock}>
           <Text style={styles.filterLabel}>Textura</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.filterRow}>
-              <FiltroOpcion
-                label="Todas"
-                activo={!filtros.textura}
-                onPress={() => setFiltros((prev) => ({ ...prev, textura: "" }))}
-              />
-              {opcionesTextura.map((opcion) => (
-                <FiltroOpcion
-                  key={`textura-${opcion}`}
-                  label={opcion}
-                  activo={filtros.textura === opcion}
-                  onPress={() =>
-                    setFiltros((prev) => ({ ...prev, textura: opcion }))
-                  }
-                />
-              ))}
-            </View>
-          </ScrollView>
+          <FiltroDesplegable
+            label={!filtros.textura ? "Todas" : filtros.textura}
+            abierto={filtroAbierto === "textura"}
+            opciones={opcionesTextura}
+            opcionActiva={filtros.textura}
+            textoTodas="Todas"
+            onToggle={() =>
+              setFiltroAbierto((prev) => (prev === "textura" ? "" : "textura"))
+            }
+            onSeleccionar={(valor) => {
+              setFiltros((prev) => ({ ...prev, textura: valor }));
+              setFiltroAbierto("");
+            }}
+          />
         </View>
 
         <View style={styles.filtersBlock}>
           <Text style={styles.filterLabel}>Gramaje</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.filterRow}>
-              <FiltroOpcion
-                label="Todos"
-                activo={!filtros.gramaje}
-                onPress={() => setFiltros((prev) => ({ ...prev, gramaje: "" }))}
-              />
-              {opcionesGramaje.map((opcion) => (
-                <FiltroOpcion
-                  key={`gramaje-${opcion}`}
-                  label={opcion}
-                  activo={filtros.gramaje === opcion}
-                  onPress={() =>
-                    setFiltros((prev) => ({ ...prev, gramaje: opcion }))
-                  }
-                />
-              ))}
-            </View>
-          </ScrollView>
+          <FiltroDesplegable
+            label={!filtros.gramaje ? "Todos" : filtros.gramaje}
+            abierto={filtroAbierto === "gramaje"}
+            opciones={opcionesGramaje}
+            opcionActiva={filtros.gramaje}
+            textoTodas="Todos"
+            onToggle={() =>
+              setFiltroAbierto((prev) => (prev === "gramaje" ? "" : "gramaje"))
+            }
+            onSeleccionar={(valor) => {
+              setFiltros((prev) => ({ ...prev, gramaje: valor }));
+              setFiltroAbierto("");
+            }}
+          />
         </View>
         <Text style={styles.counter}>
           Mostrando {resultado.length} de {registros.length}
@@ -219,20 +204,68 @@ export default function App() {
 
 type FiltroOpcionProps = {
   label: string;
-  activo: boolean;
+  activo?: boolean;
   onPress: () => void;
 };
 
 function FiltroOpcion({ label, activo, onPress }: FiltroOpcionProps) {
   return (
     <Pressable
-      style={[styles.filterChip, activo && styles.filterChipActive]}
+      style={[styles.dropdownItem, activo && styles.dropdownItemActive]}
       onPress={onPress}
     >
-      <Text style={[styles.filterChipText, activo && styles.filterChipTextActive]}>
+      <Text style={[styles.dropdownItemText, activo && styles.dropdownItemTextActive]}>
         {label}
       </Text>
     </Pressable>
+  );
+}
+
+type FiltroDesplegableProps = {
+  label: string;
+  abierto: boolean;
+  opciones: string[];
+  opcionActiva: string;
+  textoTodas: string;
+  onToggle: () => void;
+  onSeleccionar: (valor: string) => void;
+};
+
+function FiltroDesplegable({
+  label,
+  abierto,
+  opciones,
+  opcionActiva,
+  textoTodas,
+  onToggle,
+  onSeleccionar
+}: FiltroDesplegableProps) {
+  return (
+    <View style={styles.dropdown}>
+      <Pressable style={styles.dropdownButton} onPress={onToggle}>
+        <Text style={styles.dropdownButtonText}>{label}</Text>
+        <Text style={styles.dropdownArrow}>{abierto ? "▲" : "▼"}</Text>
+      </Pressable>
+
+      {abierto ? (
+        <View style={styles.dropdownPanel}>
+          {/* Lista básica para mantener una experiencia simple en móvil y web */}
+          <FiltroOpcion
+            label={textoTodas}
+            activo={!opcionActiva}
+            onPress={() => onSeleccionar("")}
+          />
+          {opciones.map((opcion) => (
+            <FiltroOpcion
+              key={opcion}
+              label={opcion}
+              activo={opcionActiva === opcion}
+              onPress={() => onSeleccionar(opcion)}
+            />
+          ))}
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -265,28 +298,46 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#44505C"
   },
-  filterRow: {
-    flexDirection: "row",
-    gap: 8,
-    paddingVertical: 2
+  dropdown: {
+    gap: 6
   },
-  filterChip: {
+  dropdownButton: {
     backgroundColor: "#FFF",
     borderWidth: 1,
     borderColor: "#D9DEE3",
-    borderRadius: 999,
+    borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 8
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between"
   },
-  filterChipActive: {
+  dropdownButtonText: {
+    color: "#24303C"
+  },
+  dropdownArrow: {
+    color: "#607080",
+    fontSize: 12
+  },
+  dropdownPanel: {
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderColor: "#D9DEE3",
+    borderRadius: 8,
+    overflow: "hidden"
+  },
+  dropdownItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 10
+  },
+  dropdownItemActive: {
     backgroundColor: "#1F6FEB",
-    borderColor: "#1F6FEB"
   },
-  filterChipText: {
+  dropdownItemText: {
     color: "#44505C",
     fontWeight: "500"
   },
-  filterChipTextActive: {
+  dropdownItemTextActive: {
     color: "#FFF"
   },
   counter: {
