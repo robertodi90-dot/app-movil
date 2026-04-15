@@ -37,6 +37,12 @@ export default function App() {
     gramaje: ""
   });
   const [filtroAbierto, setFiltroAbierto] = useState<"" | "medida" | "textura" | "gramaje">("");
+  const [mostrarFiltros, setMostrarFiltros] = useState(true);
+  const [filtrosVisibles, setFiltrosVisibles] = useState({
+    medida: true,
+    textura: true,
+    gramaje: true
+  });
   const [registroSeleccionado, setRegistroSeleccionado] = useState<Registro | null>(
     null
   );
@@ -132,59 +138,112 @@ export default function App() {
           onChangeText={setBusqueda}
           style={styles.searchInput}
         />
-        <View style={styles.filtersBlock}>
-          <Text style={styles.filterLabel}>Medida</Text>
-          <FiltroDesplegable
-            label={!filtros.medida ? "Todas" : filtros.medida}
-            abierto={filtroAbierto === "medida"}
-            opciones={opcionesMedida}
-            opcionActiva={filtros.medida}
-            textoTodas="Todas"
-            onToggle={() =>
-              setFiltroAbierto((prev) => (prev === "medida" ? "" : "medida"))
-            }
-            onSeleccionar={(valor) => {
-              setFiltros((prev) => ({ ...prev, medida: valor }));
-              setFiltroAbierto("");
-            }}
-          />
-        </View>
+        <Pressable
+          style={styles.filtersToggleButton}
+          onPress={() => {
+            setMostrarFiltros((prev) => !prev);
+            setFiltroAbierto("");
+          }}
+        >
+          <Text style={styles.filtersToggleButtonText}>
+            {mostrarFiltros ? "Ocultar filtros" : "Mostrar filtros"}
+          </Text>
+        </Pressable>
 
-        <View style={styles.filtersBlock}>
-          <Text style={styles.filterLabel}>Textura</Text>
-          <FiltroDesplegable
-            label={!filtros.textura ? "Todas" : filtros.textura}
-            abierto={filtroAbierto === "textura"}
-            opciones={opcionesTextura}
-            opcionActiva={filtros.textura}
-            textoTodas="Todas"
-            onToggle={() =>
-              setFiltroAbierto((prev) => (prev === "textura" ? "" : "textura"))
-            }
-            onSeleccionar={(valor) => {
-              setFiltros((prev) => ({ ...prev, textura: valor }));
-              setFiltroAbierto("");
-            }}
-          />
-        </View>
+        {mostrarFiltros ? (
+          <View style={styles.filtersSection}>
+            <Text style={styles.filterLabel}>Filtros visibles</Text>
+            <View style={styles.filtersSwitches}>
+              {(["medida", "textura", "gramaje"] as const).map((clave) => (
+                <Pressable
+                  key={clave}
+                  style={[
+                    styles.filterSwitch,
+                    filtrosVisibles[clave] && styles.filterSwitchActive
+                  ]}
+                  onPress={() => {
+                    setFiltrosVisibles((prev) => {
+                      const siguiente = !prev[clave];
+                      if (!siguiente && filtroAbierto === clave) {
+                        setFiltroAbierto("");
+                      }
+                      return { ...prev, [clave]: siguiente };
+                    });
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.filterSwitchText,
+                      filtrosVisibles[clave] && styles.filterSwitchTextActive
+                    ]}
+                  >
+                    {clave.charAt(0).toUpperCase() + clave.slice(1)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
 
-        <View style={styles.filtersBlock}>
-          <Text style={styles.filterLabel}>Gramaje</Text>
-          <FiltroDesplegable
-            label={!filtros.gramaje ? "Todos" : filtros.gramaje}
-            abierto={filtroAbierto === "gramaje"}
-            opciones={opcionesGramaje}
-            opcionActiva={filtros.gramaje}
-            textoTodas="Todos"
-            onToggle={() =>
-              setFiltroAbierto((prev) => (prev === "gramaje" ? "" : "gramaje"))
-            }
-            onSeleccionar={(valor) => {
-              setFiltros((prev) => ({ ...prev, gramaje: valor }));
-              setFiltroAbierto("");
-            }}
-          />
-        </View>
+            {filtrosVisibles.medida ? (
+              <View style={styles.filtersBlock}>
+                <Text style={styles.filterLabel}>Medida</Text>
+                <FiltroDesplegable
+                  label={!filtros.medida ? "Todas" : filtros.medida}
+                  abierto={filtroAbierto === "medida"}
+                  opciones={opcionesMedida}
+                  opcionActiva={filtros.medida}
+                  textoTodas="Todas"
+                  onToggle={() =>
+                    setFiltroAbierto((prev) => (prev === "medida" ? "" : "medida"))
+                  }
+                  onSeleccionar={(valor) => {
+                    setFiltros((prev) => ({ ...prev, medida: valor }));
+                    setFiltroAbierto("");
+                  }}
+                />
+              </View>
+            ) : null}
+
+            {filtrosVisibles.textura ? (
+              <View style={styles.filtersBlock}>
+                <Text style={styles.filterLabel}>Textura</Text>
+                <FiltroDesplegable
+                  label={!filtros.textura ? "Todas" : filtros.textura}
+                  abierto={filtroAbierto === "textura"}
+                  opciones={opcionesTextura}
+                  opcionActiva={filtros.textura}
+                  textoTodas="Todas"
+                  onToggle={() =>
+                    setFiltroAbierto((prev) => (prev === "textura" ? "" : "textura"))
+                  }
+                  onSeleccionar={(valor) => {
+                    setFiltros((prev) => ({ ...prev, textura: valor }));
+                    setFiltroAbierto("");
+                  }}
+                />
+              </View>
+            ) : null}
+
+            {filtrosVisibles.gramaje ? (
+              <View style={styles.filtersBlock}>
+                <Text style={styles.filterLabel}>Gramaje</Text>
+                <FiltroDesplegable
+                  label={!filtros.gramaje ? "Todos" : filtros.gramaje}
+                  abierto={filtroAbierto === "gramaje"}
+                  opciones={opcionesGramaje}
+                  opcionActiva={filtros.gramaje}
+                  textoTodas="Todos"
+                  onToggle={() =>
+                    setFiltroAbierto((prev) => (prev === "gramaje" ? "" : "gramaje"))
+                  }
+                  onSeleccionar={(valor) => {
+                    setFiltros((prev) => ({ ...prev, gramaje: valor }));
+                    setFiltroAbierto("");
+                  }}
+                />
+              </View>
+            ) : null}
+          </View>
+        ) : null}
         <Text style={styles.counter}>
           Mostrando {resultado.length} de {registros.length}
         </Text>
@@ -341,6 +400,43 @@ const styles = StyleSheet.create({
   },
   filtersBlock: {
     gap: 6
+  },
+  filtersSection: {
+    gap: 10
+  },
+  filtersToggleButton: {
+    backgroundColor: "#E7EEF8",
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: "center"
+  },
+  filtersToggleButtonText: {
+    color: "#1F4F91",
+    fontWeight: "600"
+  },
+  filtersSwitches: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap"
+  },
+  filterSwitch: {
+    backgroundColor: "#FFF",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#D9DEE3",
+    paddingHorizontal: 12,
+    paddingVertical: 8
+  },
+  filterSwitchActive: {
+    backgroundColor: "#1F6FEB",
+    borderColor: "#1F6FEB"
+  },
+  filterSwitchText: {
+    color: "#44505C",
+    fontWeight: "600"
+  },
+  filterSwitchTextActive: {
+    color: "#FFF"
   },
   filterLabel: {
     fontWeight: "600",
