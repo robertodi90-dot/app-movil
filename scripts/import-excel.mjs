@@ -50,6 +50,43 @@ const toNumber = (value) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+// Convierte "existencia" cuidando miles y decimales.
+// Ejemplo: "2,000" => 2000, "12,5" => 12.5
+const toExistenciaNumber = (value) => {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  if (value === null || value === undefined) {
+    return 0;
+  }
+
+  const raw = String(value).trim().replace(/\s+/g, "");
+  if (raw === "") {
+    return 0;
+  }
+
+  const hasComma = raw.includes(",");
+  const hasDot = raw.includes(".");
+
+  // Caso ambiguo con un solo separador y 3 dígitos al final.
+  // Lo tomamos como separador de miles para existencia.
+  if (hasComma !== hasDot) {
+    const sep = hasComma ? "," : ".";
+    const parts = raw.split(sep);
+    if (
+      parts.length === 2 &&
+      /^\d+$/.test(parts[0]) &&
+      /^\d{3}$/.test(parts[1])
+    ) {
+      const integerLike = Number(parts.join(""));
+      return Number.isFinite(integerLike) ? integerLike : 0;
+    }
+  }
+
+  return toNumber(raw);
+};
+
 const rows = xlsx.utils.sheet_to_json(sheet, {
   header: 1,
   defval: "",
@@ -60,7 +97,7 @@ const mapped = rows
   .map((row) => {
     const codigo = String(row[0] ?? "").trim();
     const descripcion = String(row[1] ?? "").trim();
-    const existencia = toNumber(row[2]);
+    const existencia = toExistenciaNumber(row[2]);
     const tipo = String(row[4] ?? "").trim();
     const textura = String(row[5] ?? "").trim();
     const gramaje = toNumber(row[6]);
