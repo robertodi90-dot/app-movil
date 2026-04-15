@@ -1,7 +1,11 @@
 export type Registro = {
-  id: string;
-  nombre: string;
-  categoria: string;
-  stock: number;
-  ubicacion: string;
+  codigo: string;
+  descripcion: string;
+  existencia: number;
+  tipo: string;
+  textura: string;
+  gramaje: number;
+  medida: string;
+  precio: number;
+  nombreVisible: string;
 };

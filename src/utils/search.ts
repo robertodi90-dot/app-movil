@@ -13,7 +13,14 @@ export const filtrarRegistros = (
   }
 
   return registros.filter((item) => {
-    const texto = [item.nombre, item.categoria, item.ubicacion]
+    const texto = [
+      item.nombreVisible,
+      item.descripcion,
+      item.tipo,
+      item.textura,
+      item.medida,
+      item.codigo
+    ]
       .map(normalize)
       .join(" ");
 

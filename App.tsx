@@ -28,6 +28,9 @@ export default function App() {
 
   const hayDatos = registros.length > 0;
   const sinResultados = hayDatos && resultado.length === 0;
+  // Si el precio viene en 0, mostramos un mensaje simple para el usuario.
+  const mostrarPrecio = (precio: number): string =>
+    precio === 0 ? "Precio no disponible" : `$${precio.toFixed(2)}`;
 
   if (!hayDatos) {
     return (
@@ -52,15 +55,17 @@ export default function App() {
         </View>
 
         <View style={styles.cardDetail}>
-          <Text style={styles.name}>{registroSeleccionado.nombre}</Text>
-          <Text style={styles.meta}>ID: {registroSeleccionado.id}</Text>
+          <Text style={styles.name}>{registroSeleccionado.nombreVisible}</Text>
+          <Text style={styles.meta}>Código: {registroSeleccionado.codigo}</Text>
           <Text style={styles.meta}>
-            Categoría: {registroSeleccionado.categoria}
+            Descripción: {registroSeleccionado.descripcion}
           </Text>
-          <Text style={styles.meta}>Stock: {registroSeleccionado.stock}</Text>
-          <Text style={styles.meta}>
-            Ubicación: {registroSeleccionado.ubicacion}
-          </Text>
+          <Text style={styles.meta}>Existencia: {registroSeleccionado.existencia}</Text>
+          <Text style={styles.meta}>Precio: {mostrarPrecio(registroSeleccionado.precio)}</Text>
+          <Text style={styles.meta}>Tipo: {registroSeleccionado.tipo}</Text>
+          <Text style={styles.meta}>Textura: {registroSeleccionado.textura}</Text>
+          <Text style={styles.meta}>Gramaje: {registroSeleccionado.gramaje}</Text>
+          <Text style={styles.meta}>Medida: {registroSeleccionado.medida}</Text>
         </View>
 
         {/* Botón simple para volver a la lista principal */}
@@ -81,7 +86,7 @@ export default function App() {
       <View style={styles.header}>
         <Text style={styles.title}>Registros</Text>
         <TextInput
-          placeholder="Buscar por nombre, categoría o ubicación"
+          placeholder="Buscar por nombre, descripción, tipo, textura, medida o código"
           value={busqueda}
           onChangeText={setBusqueda}
           style={styles.searchInput}
@@ -99,17 +104,17 @@ export default function App() {
       ) : (
         <FlatList
           data={resultado}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.codigo}
           contentContainerStyle={styles.list}
           renderItem={({ item }) => (
             <Pressable
               style={styles.card}
               onPress={() => setRegistroSeleccionado(item)}
             >
-              <Text style={styles.name}>{item.nombre}</Text>
-              <Text style={styles.meta}>Categoría: {item.categoria}</Text>
-              <Text style={styles.meta}>Stock: {item.stock}</Text>
-              <Text style={styles.meta}>Ubicación: {item.ubicacion}</Text>
+              <Text style={styles.name}>{item.nombreVisible}</Text>
+              <Text style={styles.meta}>Existencia: {item.existencia}</Text>
+              <Text style={styles.meta}>Precio: {mostrarPrecio(item.precio)}</Text>
+              <Text style={styles.metaSecondary}>Código: {item.codigo}</Text>
             </Pressable>
           )}
         />
@@ -168,6 +173,9 @@ const styles = StyleSheet.create({
   },
   meta: {
     color: "#44505C"
+  },
+  metaSecondary: {
+    color: "#607080"
   },
   centerMessage: {
     flex: 1,
