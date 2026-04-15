@@ -1,23 +1,35 @@
 [
   {
-    "id": "1",
-    "nombre": "Papel Couche 150g",
-    "categoria": "Papel",
-    "stock": 120,
-    "ubicacion": "Estante A1"
+    "codigo": "PAP-001",
+    "descripcion": "Papel couché blanco para impresión comercial",
+    "existencia": 120,
+    "tipo": "Papel",
+    "textura": "Lisa",
+    "gramaje": 150,
+    "medida": "70x100 cm",
+    "precio": 24.5,
+    "nombreVisible": "Papel Couche 150g"
   },
   {
-    "id": "2",
-    "nombre": "Tinta Negra",
-    "categoria": "Tintas",
-    "stock": 18,
-    "ubicacion": "Estante B2"
+    "codigo": "TIN-010",
+    "descripcion": "Tinta negra base aceite para offset",
+    "existencia": 18,
+    "tipo": "Tinta",
+    "textura": "Fluida",
+    "gramaje": 0,
+    "medida": "1 litro",
+    "precio": 0,
+    "nombreVisible": "Tinta Negra"
   },
   {
-    "id": "3",
-    "nombre": "Barniz UV",
-    "categoria": "Acabados",
-    "stock": 9,
-    "ubicacion": "Estante C1"
+    "codigo": "ACB-205",
+    "descripcion": "Barniz UV brillante para acabados",
+    "existencia": 9,
+    "tipo": "Acabado",
+    "textura": "Brillante",
+    "gramaje": 0,
+    "medida": "5 litros",
+    "precio": 89.99,
+    "nombreVisible": "Barniz UV"
   }
 ]
