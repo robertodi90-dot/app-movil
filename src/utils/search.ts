@@ -3,7 +3,7 @@ import type { Registro } from "../types/registro";
 const normalize = (value: string): string => value.trim().toLowerCase();
 
 export type FiltrosBusqueda = {
-  tipo: string;
+  medida: string;
   textura: string;
   gramaje: string;
 };
@@ -16,12 +16,12 @@ export const filtrarRegistros = (
   const q = normalize(termino);
 
   return registros.filter((item) => {
-    const cumpleTipo = !filtros.tipo || item.tipo === filtros.tipo;
+    const cumpleMedida = !filtros.medida || item.medida === filtros.medida;
     const cumpleTextura = !filtros.textura || item.textura === filtros.textura;
     const cumpleGramaje =
       !filtros.gramaje || String(item.gramaje) === filtros.gramaje;
 
-    if (!cumpleTipo || !cumpleTextura || !cumpleGramaje) {
+    if (!cumpleMedida || !cumpleTextura || !cumpleGramaje) {
       return false;
     }
 
