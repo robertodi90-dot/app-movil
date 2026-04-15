@@ -40,6 +40,7 @@ export default function App() {
   const [registroSeleccionado, setRegistroSeleccionado] = useState<Registro | null>(
     null
   );
+  const [mostrarEventos, setMostrarEventos] = useState(true);
 
   const opcionesMedida = useMemo(
     () => obtenerOpcionesUnicas(registros, (item) => item.medida),
@@ -188,25 +189,37 @@ export default function App() {
           Mostrando {resultado.length} de {registros.length}
         </Text>
       </View>
-      <View style={styles.eventosSection}>
-        <Text style={styles.eventosTitle}>Últimos movimientos</Text>
+      {/* Botón simple para ocultar o mostrar toda la sección de eventos */}
+      <Pressable
+        style={styles.eventosToggleButton}
+        onPress={() => setMostrarEventos((prev) => !prev)}
+      >
+        <Text style={styles.eventosToggleButtonText}>
+          {mostrarEventos ? "Ocultar eventos" : "Mostrar eventos"}
+        </Text>
+      </Pressable>
 
-        {ultimosMovimientos.length === 0 ? (
-          <Text style={styles.eventosEmpty}>No hay movimientos recientes</Text>
-        ) : (
-          ultimosMovimientos.map((evento, index) => (
-            <View
-              key={`${evento.codigo}-${index}`}
-              style={styles.eventoCard}
-            >
-              <Text style={styles.meta}>Código: {evento.codigo}</Text>
-              <Text style={styles.meta}>Descripción: {evento.descripcion}</Text>
-              <Text style={styles.meta}>Stock antes: {evento.stockAntes}</Text>
-              <Text style={styles.meta}>Stock después: {evento.stockDespues}</Text>
-            </View>
-          ))
-        )}
-      </View>
+      {mostrarEventos ? (
+        <View style={styles.eventosSection}>
+          <Text style={styles.eventosTitle}>Últimos movimientos</Text>
+
+          {ultimosMovimientos.length === 0 ? (
+            <Text style={styles.eventosEmpty}>No hay movimientos recientes</Text>
+          ) : (
+            ultimosMovimientos.map((evento, index) => (
+              <View
+                key={`${evento.codigo}-${index}`}
+                style={styles.eventoCard}
+              >
+                <Text style={styles.meta}>Código: {evento.codigo}</Text>
+                <Text style={styles.meta}>Descripción: {evento.descripcion}</Text>
+                <Text style={styles.meta}>Stock antes: {evento.stockAntes}</Text>
+                <Text style={styles.meta}>Stock después: {evento.stockDespues}</Text>
+              </View>
+            ))
+          )}
+        </View>
+      ) : null}
 
       {sinResultados ? (
         <View style={styles.centerMessage}>
@@ -377,6 +390,18 @@ const styles = StyleSheet.create({
   },
   counter: {
     color: "#607080"
+  },
+  eventosToggleButton: {
+    backgroundColor: "#1F6FEB",
+    borderRadius: 8,
+    marginHorizontal: 16,
+    marginBottom: 10,
+    paddingVertical: 10,
+    alignItems: "center"
+  },
+  eventosToggleButtonText: {
+    color: "#FFF",
+    fontWeight: "600"
   },
   eventosSection: {
     paddingHorizontal: 16,
