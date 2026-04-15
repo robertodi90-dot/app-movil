@@ -18,10 +18,17 @@ if (!fs.existsSync(resolvedInput)) {
 
 const workbook = xlsx.readFile(resolvedInput);
 const sheetName = "EXISTENCIAS_EEA";
+const registroSheetName = "REGISTRO";
 const sheet = workbook.Sheets[sheetName];
+const registroSheet = workbook.Sheets[registroSheetName];
 
 if (!sheet) {
   console.error(`No existe la hoja: ${sheetName}`);
+  process.exit(1);
+}
+
+if (!registroSheet) {
+  console.error(`No existe la hoja: ${registroSheetName}`);
   process.exit(1);
 }
 
@@ -93,6 +100,12 @@ const rows = xlsx.utils.sheet_to_json(sheet, {
   raw: false
 });
 
+const registroRows = xlsx.utils.sheet_to_json(registroSheet, {
+  header: 1,
+  defval: "",
+  raw: false
+});
+
 const mapped = rows
   .map((row) => {
     const codigo = String(row[0] ?? "").trim();
@@ -146,7 +159,50 @@ const mapped = rows
   })
   .filter(Boolean);
 
+const eventos = registroRows
+  .map((row) => {
+    // B, C, D, F y G en Excel son índices 1, 2, 3, 5 y 6.
+    const ot = String(row[1] ?? "").trim();
+    const codigo = String(row[2] ?? "").trim();
+    const descripcion = String(row[3] ?? "").trim();
+    const stockAntes = toNumber(row[5]);
+    const stockDespues = toNumber(row[6]);
+
+    // Si está vacía la fila en las columnas usadas, se ignora.
+    const isEmptyRow = [row[1], row[2], row[3], row[5], row[6]].every(
+      (cell) => String(cell ?? "").trim() === ""
+    );
+
+    if (isEmptyRow) {
+      return null;
+    }
+
+    // Si viene encabezado, también se ignora.
+    const isHeaderRow =
+      ot.toLowerCase() === "ot" && codigo.toLowerCase() === "codigo";
+
+    if (isHeaderRow) {
+      return null;
+    }
+
+    return {
+      ot,
+      codigo,
+      descripcion,
+      stockAntes,
+      stockDespues
+    };
+  })
+  .filter(Boolean);
+
 const outputPath = path.resolve("src/data/registros.json");
 fs.writeFileSync(outputPath, `${JSON.stringify(mapped, null, 2)}\n`, "utf8");
+const eventosOutputPath = path.resolve("src/data/eventos.json");
+fs.writeFileSync(
+  eventosOutputPath,
+  `${JSON.stringify(eventos, null, 2)}\n`,
+  "utf8"
+);
 
 console.log(`OK: ${mapped.length} registros exportados a ${outputPath}`);
+console.log(`OK: ${eventos.length} eventos exportados a ${eventosOutputPath}`);
