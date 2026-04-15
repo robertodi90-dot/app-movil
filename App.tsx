@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
+  ScrollView,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -11,19 +12,42 @@ import {
 } from "react-native";
 import { cargarRegistrosIniciales } from "./src/services/registros";
 import type { Registro } from "./src/types/registro";
-import { filtrarRegistros } from "./src/utils/search";
+import { filtrarRegistros, type FiltrosBusqueda } from "./src/utils/search";
 
 const registros = cargarRegistrosIniciales();
 
+const obtenerOpcionesUnicas = (
+  lista: Registro[],
+  selector: (item: Registro) => string
+): string[] => [...new Set(lista.map(selector))].sort((a, b) => a.localeCompare(b));
+
 export default function App() {
   const [busqueda, setBusqueda] = useState("");
+  const [filtros, setFiltros] = useState<FiltrosBusqueda>({
+    tipo: "",
+    textura: "",
+    gramaje: ""
+  });
   const [registroSeleccionado, setRegistroSeleccionado] = useState<Registro | null>(
     null
   );
 
+  const opcionesTipo = useMemo(
+    () => obtenerOpcionesUnicas(registros, (item) => item.tipo),
+    []
+  );
+  const opcionesTextura = useMemo(
+    () => obtenerOpcionesUnicas(registros, (item) => item.textura),
+    []
+  );
+  const opcionesGramaje = useMemo(
+    () => obtenerOpcionesUnicas(registros, (item) => String(item.gramaje)),
+    []
+  );
+
   const resultado = useMemo(
-    () => filtrarRegistros(registros, busqueda),
-    [busqueda]
+    () => filtrarRegistros(registros, busqueda, filtros),
+    [busqueda, filtros]
   );
 
   const hayDatos = registros.length > 0;
@@ -91,6 +115,74 @@ export default function App() {
           onChangeText={setBusqueda}
           style={styles.searchInput}
         />
+        <View style={styles.filtersBlock}>
+          <Text style={styles.filterLabel}>Tipo</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.filterRow}>
+              <FiltroOpcion
+                label="Todos"
+                activo={!filtros.tipo}
+                onPress={() => setFiltros((prev) => ({ ...prev, tipo: "" }))}
+              />
+              {opcionesTipo.map((opcion) => (
+                <FiltroOpcion
+                  key={`tipo-${opcion}`}
+                  label={opcion}
+                  activo={filtros.tipo === opcion}
+                  onPress={() =>
+                    setFiltros((prev) => ({ ...prev, tipo: opcion }))
+                  }
+                />
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+
+        <View style={styles.filtersBlock}>
+          <Text style={styles.filterLabel}>Textura</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.filterRow}>
+              <FiltroOpcion
+                label="Todas"
+                activo={!filtros.textura}
+                onPress={() => setFiltros((prev) => ({ ...prev, textura: "" }))}
+              />
+              {opcionesTextura.map((opcion) => (
+                <FiltroOpcion
+                  key={`textura-${opcion}`}
+                  label={opcion}
+                  activo={filtros.textura === opcion}
+                  onPress={() =>
+                    setFiltros((prev) => ({ ...prev, textura: opcion }))
+                  }
+                />
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+
+        <View style={styles.filtersBlock}>
+          <Text style={styles.filterLabel}>Gramaje</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.filterRow}>
+              <FiltroOpcion
+                label="Todos"
+                activo={!filtros.gramaje}
+                onPress={() => setFiltros((prev) => ({ ...prev, gramaje: "" }))}
+              />
+              {opcionesGramaje.map((opcion) => (
+                <FiltroOpcion
+                  key={`gramaje-${opcion}`}
+                  label={opcion}
+                  activo={filtros.gramaje === opcion}
+                  onPress={() =>
+                    setFiltros((prev) => ({ ...prev, gramaje: opcion }))
+                  }
+                />
+              ))}
+            </View>
+          </ScrollView>
+        </View>
         <Text style={styles.counter}>
           Mostrando {resultado.length} de {registros.length}
         </Text>
@@ -125,6 +217,25 @@ export default function App() {
   );
 }
 
+type FiltroOpcionProps = {
+  label: string;
+  activo: boolean;
+  onPress: () => void;
+};
+
+function FiltroOpcion({ label, activo, onPress }: FiltroOpcionProps) {
+  return (
+    <Pressable
+      style={[styles.filterChip, activo && styles.filterChipActive]}
+      onPress={onPress}
+    >
+      <Text style={[styles.filterChipText, activo && styles.filterChipTextActive]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -146,6 +257,37 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderWidth: 1,
     borderColor: "#D9DEE3"
+  },
+  filtersBlock: {
+    gap: 6
+  },
+  filterLabel: {
+    fontWeight: "600",
+    color: "#44505C"
+  },
+  filterRow: {
+    flexDirection: "row",
+    gap: 8,
+    paddingVertical: 2
+  },
+  filterChip: {
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderColor: "#D9DEE3",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8
+  },
+  filterChipActive: {
+    backgroundColor: "#1F6FEB",
+    borderColor: "#1F6FEB"
+  },
+  filterChipText: {
+    color: "#44505C",
+    fontWeight: "500"
+  },
+  filterChipTextActive: {
+    color: "#FFF"
   },
   counter: {
     color: "#607080"
