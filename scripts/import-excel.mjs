@@ -161,15 +161,14 @@ const mapped = rows
 
 const eventos = registroRows
   .map((row) => {
-    // B, C, D, F y G en Excel son índices 1, 2, 3, 5 y 6.
-    const ot = String(row[1] ?? "").trim();
+    // C, D, F y G en Excel son índices 2, 3, 5 y 6.
     const codigo = String(row[2] ?? "").trim();
     const descripcion = String(row[3] ?? "").trim();
     const stockAntes = toNumber(row[5]);
     const stockDespues = toNumber(row[6]);
 
     // Si está vacía la fila en las columnas usadas, se ignora.
-    const isEmptyRow = [row[1], row[2], row[3], row[5], row[6]].every(
+    const isEmptyRow = [row[2], row[3], row[5], row[6]].every(
       (cell) => String(cell ?? "").trim() === ""
     );
 
@@ -179,14 +178,14 @@ const eventos = registroRows
 
     // Si viene encabezado, también se ignora.
     const isHeaderRow =
-      ot.toLowerCase() === "ot" && codigo.toLowerCase() === "codigo";
+      codigo.toLowerCase() === "codigo" &&
+      descripcion.toLowerCase() === "descripcion";
 
     if (isHeaderRow) {
       return null;
     }
 
     return {
-      ot,
       codigo,
       descripcion,
       stockAntes,
