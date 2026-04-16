@@ -24,6 +24,18 @@ type Evento = {
 
 const eventos = eventosData as Evento[];
 
+// Paleta corporativa simple para mantener colores consistentes en toda la app.
+const COLORES = {
+  azulPrincipal: "#007BC3",
+  azulSecundario: "#335298",
+  moradoCorporativo: "#3A1A63",
+  fondoSuave: "#F3F4F6",
+  textoPrincipal: "#111111",
+  blanco: "#FFFFFF",
+  bordeSuave: "#D9DEE3",
+  textoSecundario: "#4A5563"
+} as const;
+
 const obtenerOpcionesUnicas = (
   lista: Registro[],
   selector: (item: Registro) => string
@@ -379,7 +391,7 @@ function FiltroDesplegable({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F6F8"
+    backgroundColor: COLORES.fondoSuave
   },
   header: {
     paddingHorizontal: 16,
@@ -388,15 +400,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "700"
+    fontWeight: "700",
+    color: COLORES.azulPrincipal
   },
   searchInput: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: "#D9DEE3"
+    borderColor: COLORES.bordeSuave,
+    color: COLORES.textoPrincipal
   },
   filtersBlock: {
     gap: 6
@@ -405,13 +419,13 @@ const styles = StyleSheet.create({
     gap: 10
   },
   filtersToggleButton: {
-    backgroundColor: "#E7EEF8",
+    backgroundColor: COLORES.azulPrincipal,
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: "center"
   },
   filtersToggleButtonText: {
-    color: "#1F4F91",
+    color: COLORES.blanco,
     fontWeight: "600"
   },
   filtersSwitches: {
@@ -420,35 +434,35 @@ const styles = StyleSheet.create({
     flexWrap: "wrap"
   },
   filterSwitch: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#D9DEE3",
+    borderColor: COLORES.bordeSuave,
     paddingHorizontal: 12,
     paddingVertical: 8
   },
   filterSwitchActive: {
-    backgroundColor: "#1F6FEB",
-    borderColor: "#1F6FEB"
+    backgroundColor: COLORES.moradoCorporativo,
+    borderColor: COLORES.moradoCorporativo
   },
   filterSwitchText: {
-    color: "#44505C",
+    color: COLORES.textoSecundario,
     fontWeight: "600"
   },
   filterSwitchTextActive: {
-    color: "#FFF"
+    color: COLORES.blanco
   },
   filterLabel: {
     fontWeight: "600",
-    color: "#44505C"
+    color: COLORES.azulSecundario
   },
   dropdown: {
     gap: 6
   },
   dropdownButton: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderWidth: 1,
-    borderColor: "#D9DEE3",
+    borderColor: COLORES.bordeSuave,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -457,16 +471,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   dropdownButtonText: {
-    color: "#24303C"
+    color: COLORES.textoPrincipal
   },
   dropdownArrow: {
-    color: "#607080",
+    color: COLORES.azulSecundario,
     fontSize: 12
   },
   dropdownPanel: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderWidth: 1,
-    borderColor: "#D9DEE3",
+    borderColor: COLORES.bordeSuave,
     borderRadius: 8,
     overflow: "hidden"
   },
@@ -475,20 +489,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   dropdownItemActive: {
-    backgroundColor: "#1F6FEB",
+    backgroundColor: COLORES.moradoCorporativo,
   },
   dropdownItemText: {
-    color: "#44505C",
+    color: COLORES.textoSecundario,
     fontWeight: "500"
   },
   dropdownItemTextActive: {
-    color: "#FFF"
+    color: COLORES.blanco
   },
   counter: {
-    color: "#607080"
+    color: COLORES.azulSecundario
   },
   eventosToggleButton: {
-    backgroundColor: "#1F6FEB",
+    backgroundColor: COLORES.azulPrincipal,
     borderRadius: 8,
     marginHorizontal: 16,
     marginBottom: 10,
@@ -496,7 +510,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   eventosToggleButtonText: {
-    color: "#FFF",
+    color: COLORES.blanco,
     fontWeight: "600"
   },
   eventosSection: {
@@ -506,43 +520,50 @@ const styles = StyleSheet.create({
   eventosTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#24303C"
+    color: COLORES.azulPrincipal
   },
   eventosEmpty: {
-    color: "#607080"
+    color: COLORES.azulSecundario
   },
   eventoCard: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderRadius: 10,
     padding: 12,
-    gap: 4
+    gap: 4,
+    borderWidth: 1,
+    borderColor: COLORES.bordeSuave
   },
   list: {
     padding: 16,
     gap: 10
   },
   card: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderRadius: 10,
     padding: 12,
-    gap: 6
+    gap: 6,
+    borderWidth: 1,
+    borderColor: COLORES.bordeSuave
   },
   cardDetail: {
-    backgroundColor: "#FFF",
+    backgroundColor: COLORES.blanco,
     borderRadius: 10,
     margin: 16,
     padding: 16,
-    gap: 8
+    gap: 8,
+    borderWidth: 1,
+    borderColor: COLORES.bordeSuave
   },
   name: {
     fontSize: 16,
-    fontWeight: "600"
+    fontWeight: "600",
+    color: COLORES.azulPrincipal
   },
   meta: {
-    color: "#44505C"
+    color: COLORES.textoSecundario
   },
   metaSecondary: {
-    color: "#607080"
+    color: COLORES.azulSecundario
   },
   centerMessage: {
     flex: 1,
@@ -554,21 +575,22 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 16,
     fontWeight: "600",
-    textAlign: "center"
+    textAlign: "center",
+    color: COLORES.textoPrincipal
   },
   helper: {
-    color: "#607080",
+    color: COLORES.azulSecundario,
     textAlign: "center"
   },
   backButton: {
-    backgroundColor: "#1F6FEB",
+    backgroundColor: COLORES.azulPrincipal,
     borderRadius: 8,
     marginHorizontal: 16,
     paddingVertical: 12,
     alignItems: "center"
   },
   backButtonText: {
-    color: "#FFF",
+    color: COLORES.blanco,
     fontWeight: "600"
   }
 });
